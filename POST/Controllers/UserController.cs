@@ -25,7 +25,7 @@ namespace POST.Controllers
                 return Ok(result.Succeeded);
             }
 
-            return Unauthorized();
+            return Unauthorized(result.Errors);
         }
         [HttpPost("signin")]
         public async Task<IActionResult> signIn(SigninModel model)
