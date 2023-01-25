@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Identity;
-
-namespace POST.Data
+﻿namespace POST.Models
 {
-    public class ApplicationUser : IdentityUser
+    public class UserModel
     {
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
+        public string? Email { get; set; }
+
     }
 }

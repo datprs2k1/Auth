@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using POST.Data;
 using POST.Models;
 using POST.Repositories;
+using System.Security.Claims;
 
 namespace POST.Controllers
 {
@@ -11,7 +13,8 @@ namespace POST.Controllers
     {
         private readonly IUserRepository _repo;
 
-        public UserController(IUserRepository repo) {
+        public UserController(IUserRepository repo)
+        {
             _repo = repo;
         }
 
@@ -32,12 +35,31 @@ namespace POST.Controllers
         {
             var result = await _repo.SigninAsync(model);
 
-            if(string.IsNullOrEmpty(result))
+            if (string.IsNullOrEmpty(result))
             {
                 return Unauthorized();
             }
 
             return Ok(result);
+        }
+
+        [HttpGet("user")]
+        [Authorize]
+        public async Task<IActionResult> getCurrentUser()
+        {
+
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+
+            if (identity != null)
+            {
+                var userClaims = identity.Claims;
+                var email = userClaims.FirstOrDefault(x => x.Type == ClaimTypes.Email)?.Value;
+                var user = await _repo.GetUserAsync(email);
+
+                return Ok(user);
+            }
+
+            return BadRequest();
         }
     }
 }

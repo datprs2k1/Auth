@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using POST.Data;
 using POST.Models;
@@ -15,17 +16,20 @@ namespace POST.Repositories
         public SignInManager<ApplicationUser> signInManager { get; }
 
         private readonly IConfiguration configuration;
+        private readonly IMapper mapper;
 
-        public UserRepository(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IConfiguration configuration) { 
+        public UserRepository(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IConfiguration configuration, IMapper mapper)
+        {
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.configuration = configuration;
+            this.mapper = mapper;
         }
         public async Task<string> SigninAsync(SigninModel model)
         {
             var result = await signInManager.PasswordSignInAsync(model.Email, model.Password, false, false);
 
-            if(!result.Succeeded)
+            if (!result.Succeeded)
             {
                 return string.Empty;
             }
@@ -60,6 +64,13 @@ namespace POST.Repositories
             };
 
             return await userManager.CreateAsync(user, model.Password);
+        }
+
+        public async Task<UserModel> GetUserAsync(string email)
+        {
+            var user = await userManager.FindByEmailAsync(email);
+
+            return mapper.Map<UserModel>(user);
         }
     }
 }
