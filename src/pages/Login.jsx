@@ -5,7 +5,11 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import FacebookIcon from '@mui/icons-material/Facebook';
 import GoogleIcon from '@mui/icons-material/Google';
 import { NavLink } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+import { useDispatch } from 'react-redux';
+import { login } from '../stores/user/index';
 
 Login.propTypes = {};
 
@@ -16,6 +20,19 @@ function Login(props) {
       password: yup.string().required(),
     })
     .required();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, touchedFields },
+  } = useForm({
+    resolver: yupResolver(schema),
+  });
+
+  const dispatch = useDispatch();
+  const onSubmit = async (data) => {
+    dispatch(login(data));
+  };
 
   return (
     <div>
@@ -29,7 +46,7 @@ function Login(props) {
         }}
       >
         <Container maxWidth="sm">
-          <form>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <Box sx={{ my: 3 }}>
               <Typography color="textPrimary" variant="h4">
                 Sign in
@@ -39,9 +56,29 @@ function Login(props) {
               </Typography>
             </Box>
 
-            <TextField fullWidth label="Email Address" margin="normal" variant="outlined" type="email" name="email" />
+            <TextField
+              {...register('email')}
+              error={Boolean(touchedFields.email && errors.email)}
+              helperText={touchedFields.email && errors.email?.message}
+              fullWidth
+              label="Email Address"
+              margin="normal"
+              variant="outlined"
+              type="email"
+              name="email"
+            />
 
-            <TextField fullWidth label="Password" margin="normal" type="password" variant="outlined" name="password" />
+            <TextField
+              {...register('password')}
+              error={Boolean(touchedFields.password && errors.password)}
+              helperText={touchedFields.password && errors.password?.message}
+              fullWidth
+              label="Password"
+              margin="normal"
+              type="password"
+              variant="outlined"
+              name="password"
+            />
             <Box sx={{ py: 2 }}>
               <Button color="primary" fullWidth size="large" type="submit" variant="contained">
                 Sign In Now

@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+import api from './../../services/api';
 
 export const userSlice = createSlice({
   name: 'user',
@@ -9,8 +10,15 @@ export const userSlice = createSlice({
     expried: '',
   },
   reducers: {
-    login: (state, action) => {
-      console.log('Hello');
+    login: async (state, action) => {
+      const { email, password } = action.payload;
+
+      const response = await api.post('https://localhost:7080/api/User/signin', {
+        email,
+        password,
+      });
+
+      console.log(response);
     },
   },
 });
