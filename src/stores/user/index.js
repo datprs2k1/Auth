@@ -13,7 +13,7 @@ export const userSlice = createSlice({
     login: async (state, action) => {
       const { email, password } = action.payload;
 
-      const response = await api.post('https://localhost:7080/api/User/signin', {
+      const response = await api.post('/api/User/signin', {
         email,
         password,
       });
